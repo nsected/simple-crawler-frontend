@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.sites-title a{
+  font-size: 2em;
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.sites-href{
+  display: block;
+  color: #c3002f;
+  margin-top: -5px;
+  margin-left: 2px;
+}
+
+.sites-item{
+  list-style-type: none;
+}
+
+.start-parse-button button{
+  color: #1976d2;
+  font-size: 25px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #1976d2;
+  border-radius: 3px;
+  background-color: #ffffff;
+  margin-top: 5px;
+  padding-left: 8px;
+}
+
+.add-site-link{
+  border-radius: 3px;
+  padding: 15px;
+  width: 10px;
+  display: block;
+  height: 10px;
+  margin-left: 40px;
+  color: #1976d2;
+  border: 1px solid #1976d2;
+}
+
+.add-site-sign{
+  font-size: 150px;
+  color: #1976d2;
+  position: absolute;
+  margin-top: -150px;
+  padding-left: 5px;
+  height: 0;
+}
+

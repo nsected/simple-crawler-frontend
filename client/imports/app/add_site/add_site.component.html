@@ -1,0 +1,26 @@
+<header>
+    <a routerLink="/sites" class="back">&#60;</a>
+    <div class="site-info">
+        <h1>{{newsite.title}}</h1>
+        <a href="{{newsite.url}}" class="sites-href">{{newsite.url}}</a>
+    </div>
+</header>
+<div style="padding: 20px;">
+    <div>
+        <label>url: </label>
+        <input [(ngModel)]="newsite.url" placeholder="http://example.net">
+    </div>
+    <div>
+        <label>Имя: </label>
+        <input [(ngModel)]="newsite.title" placeholder="">
+    </div>
+    <div>
+        <label>Приоритет (Целое число >0): </label>
+        <input [(ngModel)]="newsite.priority" placeholder="1">
+    </div>
+    <div>
+        <label>Начальная ссылка: </label>
+        <input [(ngModel)]="newsite.init_url" placeholder="/page">
+    </div>
+    <button (click)="addSite()">Добавить сайт</button>
+</div>

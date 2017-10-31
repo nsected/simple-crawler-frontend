@@ -1,0 +1,23 @@
+<h2>Sites</h2>
+<a routerLink="/add-site" class="add-site-link"><span class="add-site-sign">̟</span></a>
+<ul>
+    <li *ngFor="let item of data | async" class="sites-item" style="overflow: auto; padding-bottom: 10px;">
+        <div style="display: inline-block; padding-left: 10px">
+        <span class="sites-title">
+            <a routerLink="/sites/site/{{item._id._str}}">
+                {{item.title}}
+            </a>
+           <span class="sites-href">
+               {{item.url}}
+           </span>
+        </span>
+        </div>
+        <div style="float: left;">
+            <span class="start-parse-button">
+                <button (click)="toggle_parsing(item._id._str, item.to_parse)">
+                    {{item.to_parse ? '❚❚' : '►'}}
+                </button>
+            </span>
+        </div>
+    </li>
+</ul>

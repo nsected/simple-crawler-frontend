@@ -1,0 +1,37 @@
+<table *ngIf="!!pages" class="pages_table">
+    <tbody>
+    <caption>Страницы</caption>
+    <tr>
+        <th>content Type</th>
+        <th>адрес</th>
+        <th>дата создания</th>
+        <th>дата обновления</th>
+        <th>статус</th>
+        <th>размер страницы байт</th>
+    </tr>
+    <tr>
+        <td><input (change)="filter($event, 'contentType', 'gte')"></td>
+        <td><input (change)="filter($event, 'url', 'gte')"></td>
+        <td><input (change)="filter($event, 'create_date', 'gte')"></td>
+        <td><input (change)="filter($event, 'update_date', 'gte')"></td>
+        <td><input (change)="filter($event, 'status', 'gte')"></td>
+        <td><input (change)="filter($event, 'bodySize', 'gte')"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td><input (change)="filter($event, 'create_date', 'lte')"></td>
+        <td><input (change)="filter($event, 'update_date', 'lte')"></td>
+        <td><input (change)="filter($event, 'status', 'lte')"></td>
+        <td><input (change)="filter($event, 'bodySize', 'lte')"></td>
+    </tr>
+    <tr *ngFor="let item of pages | async">
+        <td>{{item.contentType}}</td>
+        <td>{{item.url}}</td>
+        <td>{{item.create_date}}</td>
+        <td>{{item.update_date}}</td>
+        <td>{{item.status}}</td>
+        <td>{{item.bodySize}}</td>
+    </tr>
+    </tbody>
+</table>

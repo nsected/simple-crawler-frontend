@@ -1,0 +1,14 @@
+<header>
+    <a routerLink="/sites" class="column-left">&#60;</a>
+    <div class="column-center">
+    <h1>{{site_data.title}}</h1>
+    <a href="{{site_data.url}}" class="sites-href">{{site_data.url}}</a>
+    </div>
+    <a routerLink="/sites/edit/{{site_id}}" class="column-right">✎</a>
+</header>
+<div *ngIf="!!site_data.title">
+    <graph [urls]="urls" [pages]="pages" [host]="host" [is_init]="is_init"></graph>
+</div>
+<div *ngIf="!!site_data.title">
+    <results_table [host]="host"></results_table>
+</div>

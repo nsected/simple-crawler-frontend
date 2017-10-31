@@ -1,0 +1,19 @@
+<header>
+    <a routerLink="/sites" class="back">&#60;</a>
+    <div class="site-info">
+        <h1>{{site.title}}</h1>
+        <a href="{{site.url}}" class="sites-href">{{site.url}}</a>
+    </div>
+</header>
+<div style="padding: 20px;">
+    <div>
+        <label>Имя: </label>
+        <input [(ngModel)]="site.title" placeholder="">
+    </div>
+    <div>
+        <label>Приоритет (Целое число): </label>
+        <input [(ngModel)]="site.priority" placeholder="0">
+    </div>
+    <button (click)="editSite()">✔</button>
+    <button (click)="removeSite()">✖</button>
+</div>
