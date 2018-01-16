@@ -2,9 +2,41 @@ importScripts("/js/d3.min.js");
 
 onmessage = function(event) {
     var nodes = event.data.nodes,
+        nodes2 = event.data.nodes2,
         links = event.data.links,
         width = event.data.width,
         height = event.data.height;
+
+    nodes.forEach(link => {
+        nodes2.forEach(link2 => {
+            if(link.url == link2.url){
+                link = link2
+            }
+        });
+    });
+
+    //проверка на ссылки без нод. Если нет ноды, она будет добавлена
+    console.log('проверка на ссылки без нод');
+    links.forEach(link => {
+        let found = nodes.some(function (el) {
+            return el.url == link.target;
+        });
+
+        if (!found) {
+            nodes.push({
+                contentType: null,
+                url: link.target,
+                redirectURL: null,
+                create_date: null,
+                update_date: null,
+                status: null,
+                bodySize: null,
+                site: ""
+            });
+
+        }
+    });
+
 
     var simulation = d3
         .forceSimulation()

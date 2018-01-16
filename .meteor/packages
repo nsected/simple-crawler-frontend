@@ -23,3 +23,4 @@ dispatch:mocha-phantomjs
 shell-server@0.2.4
 dynamic-import
 d3js:d3
+meteorhacks:aggregate

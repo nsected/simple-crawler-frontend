@@ -7,10 +7,15 @@ if (Meteor.isServer) {
     Meteor.publish('urls', function (site, update_date) {
         return UrlsCollection.find({
                 "site": site,
-                "update_date": {$ne: null},
-
+            $or:[
+                {"update_date": {$ne: null}},
+                {"create_date": {$ne: null}},
+                ]
             },
-            {limit: 20000});
+            {
+                sort: {create_date: 1},
+                limit: 5000
+            });
     });
 }
 

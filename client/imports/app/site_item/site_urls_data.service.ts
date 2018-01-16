@@ -12,7 +12,7 @@ export class UrlsDataService {
 
         let data: Urls = {};
         try {
-            data.pages = PagesCollection.find({site:host});
+            data.pages = PagesCollection.find({site:host, "create_date": {$ne: null}});
             data.urls = UrlsCollection.find({site:host});
             return data
         } catch (error) {

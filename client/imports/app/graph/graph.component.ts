@@ -11,19 +11,20 @@ import {Subscription} from "rxjs/Subscription";
 //todo: кнопка включения-отключения задач +
 //todo: сохранение распарсенных страниц в бд+
 //todo: выгрузка компонента графа при загрузке другой страницы +
-//todo: Выделять ноды цветом в зависимости от http статуса и факта распарсивания страницы +-
 //todo: редактирование и удаление сайтов+
 //todo: сделать фильтр, выводящий страницы по параметрам+
 //todo: оптимизация скорости загрузки данных+
 //todo: симуляция графа на сервере либо в web worker+
 //todo: двигать тултип вместо пересоздания каждый тик+
+//todo: Выделять ноды цветом в зависимости от http статуса и факта распарсивания страницы +-
+//todo: исправить динамический рендеринг графа+-
 
+//todo: прописать все интерфейсы
+//todo: исправить баг при idle состоянии в getworkdata
 //todo: Выделять ноды размером в зависимости от количества исходящих ссылок
-//todo: исправить динамический рендеринг графа
 //todo: исправить exeptions
 //todo: оптимизация дата-сервисов получения данных
-//todo: исправить баг при idle состоянии в getworkdata
-//todo: прописать все интерфейсы
+
 
 @Component({
     selector: "graph",
@@ -38,6 +39,7 @@ export class GraphComponent implements OnInit {
     @Input() host: string;
     @Input() is_init: boolean;
     timerId: any;
+    timerId2: any;
     init: boolean;
 
     ngOnInit(): void {
@@ -45,13 +47,21 @@ export class GraphComponent implements OnInit {
         var hst = this.host;
         var redrawed = false;
         var build_graph_worker = new Worker("/js/build_graph.js");
-        var graph_subscription: Subscription;
+        var urls_subscription: Subscription;
+        var pages_subscription: Subscription;
+        var status = 'loading;';
+
         window.urls = {
             links: [
                 {
                     site: "",
                     source: "/",
                     target: "/",
+                }
+            ],
+            nodes2: [
+                {
+                    id: "/"
                 }
             ],
             nodes: [
@@ -62,48 +72,36 @@ export class GraphComponent implements OnInit {
         };
 
         if (this.urls) {
-            graph_subscription = this.urls
+            urls_subscription = this.urls
                 .subscribe(
                     urls => {
                         clearTimeout(this.timerId);
                         this.timerId = setTimeout(function () {
+                            console.log(urls);
                             if (!redrawed) {
-                                //проверка на ссылки без нод. Если нет ноды, она будет добавлена
-                                console.log('проверка на ссылки без нод');
-                                urls.forEach(link => {
-                                    let found = window.urls.nodes.some(function (el) {
-                                        return el.url == link.target;
-                                    });
-
-                                    if (!found) {
-                                        window.urls.nodes.push({
-                                            contentType: null,
-                                            url: link.target,
-                                            redirectURL: null,
-                                            create_date: null,
-                                            update_date: null,
-                                            status: null,
-                                            bodySize: null,
-                                            site: "developer.mozilla.org"
-                                        });
-
-                                    }
-                                });
-
+                                window.urls.nodes = window.urls.nodes2;
                                 window.urls.links = urls;
-                                graph_build(window.urls);
+                                // urls_subscription.unsubscribe();
+                                // pages_subscription.unsubscribe();
+                                graph_build();
                             }
-                        }, 700);
+                        }, 100);
                     }
                 )
             ;
         }
 
         if (this.pages) {
-            this.pages
+            pages_subscription = this.pages
                 .subscribe(
                     pages => {
-                        window.urls.nodes = pages;
+                        window.urls.nodes2 = pages;
+                        clearTimeout(this.timerId2);
+                        this.timerId2 = setTimeout(function () {
+                            // graph_build();
+                            this.status = 'simulating';
+                            document.querySelector("#loader").textContent = 'Симуляция графа...';
+                        }, 500);
                     }
                 )
             ;
@@ -111,8 +109,6 @@ export class GraphComponent implements OnInit {
 
 
         this.init = true;
-
-
         var html_container = document.querySelector(".html-container");
         var svg_container = document.querySelector("#d3-container-svg");
         var canvas = document.querySelector("canvas"),
@@ -123,8 +119,6 @@ export class GraphComponent implements OnInit {
             transform = d3.zoomIdentity;
         context.fillStyle = "rgb(187, 187, 187)";
         var svg = d3.select(svg_container);
-        var fast_draw;
-        var full_draw;
         var dragging = false;
         svg
             .call(
@@ -144,6 +138,7 @@ export class GraphComponent implements OnInit {
         function graph_build() {
             build_graph_worker.postMessage({
                 nodes: window.urls.nodes,
+                nodes2: window.urls.nodes2,
                 links: window.urls.links,
                 width: width,
                 height: height
@@ -153,21 +148,11 @@ export class GraphComponent implements OnInit {
                 window.urls.nodes = event.data.nodes;
                 window.urls.links = event.data.links;
                 full_draw();
-                document.querySelector("#loader").remove();
-                graph_subscription.unsubscribe();
+
             };
         }
 
         function fast_draw() {
-            // Array
-            //     .from(
-            //         document.getElementsByClassName('info')
-            //     )
-            //     .forEach(
-            //         elem => {
-            //             elem.parentNode.removeChild(elem)
-            //         }
-            //     );
             context.beginPath();
             window.urls.nodes.forEach(
                 (d, i) => {
@@ -178,15 +163,6 @@ export class GraphComponent implements OnInit {
         }
 
         function full_draw() {
-            // Array
-            //     .from(
-            //         document.getElementsByClassName('info')
-            //     )
-            //     .forEach(
-            //         elem => {
-            //             elem.parentNode.removeChild(elem)
-            //         }
-            //     );
             context.beginPath();
             window.urls.nodes.forEach(
                 (d, i) => {
@@ -208,6 +184,12 @@ export class GraphComponent implements OnInit {
 
             window.urls.nodes.forEach(drawNode);
             context.restore();
+
+            if (this.status == 'simulating') {
+                document.querySelector("#loader").remove();
+                svg_container.setAttribute('style', 'pointer-events: all');
+                this.status = 'loaded'
+            }
         }
 
         function clicked() {
@@ -225,8 +207,6 @@ export class GraphComponent implements OnInit {
                     full_draw();
                 }
             }
-
-
         }
 
         function dragsubject() {
@@ -245,10 +225,6 @@ export class GraphComponent implements OnInit {
                 dy = y - point.y;
 
                 if (dx * dx + dy * dy < radius * radius) {
-                    // console.log(x - window.urls.nodes[i].x);
-                    // console.log(y - window.urls.nodes[i].y);
-                    // console.log(transform.applyX(point.x));
-                    // console.log(transform.applyY(point.y));
                     if (point.toggle == true) {
                         point.toggle = false;
                         document.getElementById(point.url).remove();
@@ -268,11 +244,11 @@ export class GraphComponent implements OnInit {
                 pointer-events: none !important;
                 >
                 <span style="pointer-events: all;">
-                Адрес: <a href = "${hst + point.url}">${point.url}</a><br />
+                Адрес: <a href = "//${hst + point.url}">${point.url}</a><br />
                 Тип: ${point.contentType || '-'}<br />
                 Статус: ${point.status || '-'}<br />
                 Размер байт: ${point.selector || '-'}<br />
-                Дата обновления: ${point.create_date || 'страница еще не парсилась'}<br />
+                Дата обновления: ${point.create_date || 'страница в очереди'}<br />
                 </span>
                 </div>`);
 
@@ -322,9 +298,9 @@ export class GraphComponent implements OnInit {
             context.arc(d.x, d.y, radius, 0, 7);
             // }
             if (!!d.toggle) {
-                    let point = document.getElementById(d.url);
-                    point.style.left = transform.applyX(d.x) + 'px';
-                    point.style.top = transform.applyY(d.y) + 'px';
+                let point = document.getElementById(d.url);
+                point.style.left = transform.applyX(d.x) + 'px';
+                point.style.top = transform.applyY(d.y) + 'px';
                 // if (!!d.url) {
                 //     var parse_date;
                 //     if (!!d.create_date) {

@@ -6,9 +6,13 @@ export const PagesCollection = new MongoObservable.Collection<Page>("pages");
 if (Meteor.isServer) {
     Meteor.publish('pages_graph', function (site, update_date) {
         return PagesCollection.find({
-                "site": site, "create_date": {$ne: null},
+                "site": site,
+                "create_date": {$ne: null},
             },
-            {limit: 20000}
+            {
+                sort: {create_date: 1},
+                limit: 20000
+            }
         );
     });
 
