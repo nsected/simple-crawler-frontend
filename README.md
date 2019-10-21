@@ -1,5 +1,5 @@
 # simple-crawler-frontend
-Демо: http://ec2-18-221-224-74.us-east-2.compute.amazonaws.com:3003
+Кравлер для вебсайтов с отображением в виде графа.
 
 ![alt tag](https://i.imgur.com/TiNGOEK.png "Экран информации сайта")
 
