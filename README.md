@@ -1,5 +1,5 @@
 # simple-crawler-frontend
-Кравлер для вебсайтов с отображением в виде графа.
+Crawler для вебсайтов с отображением в виде графа.
 
 ![alt tag](https://i.imgur.com/TiNGOEK.png "Экран информации сайта")
 
